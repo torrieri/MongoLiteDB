@@ -2,7 +2,10 @@ require 'json'
 require 'matcher'
 
 class MongoLiteDB
-  def initialize(filename="db.nsl")
+  attr_reader :options
+
+  def initialize(filename="db.nsl", options={})
+    @options = options
     @filename = filename
     if not File.exists?(@filename)
       open(@filename, 'w'){|f| f.write(
@@ -60,7 +63,7 @@ class MongoLiteDB
     if f
       if db
         f.rewind
-        f.write db.to_json
+        f.write(options[:pretty_json] ? JSON.pretty_generate(db) : db.to_json)
         f.flush
         f.truncate f.pos
       end
